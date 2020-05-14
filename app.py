@@ -1,10 +1,11 @@
-from flask import Flask, request
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/healthcheck")
 def healthcheck():
-    return "The server is running! (Todo-api of the snake)"
+    data = {'message': 'The server is running! (Todo-api of the snake)'}
+    return jsonify(data)
 
 # start the development server using the run() method
 if __name__ == "__main__":
