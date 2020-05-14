@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_pymongo import PyMongo
+from bson.objectid import ObjectId
 from pprint import pprint
 import datetime
 
@@ -27,7 +28,7 @@ def create():
     task = {
         "name": data['name'],
         "description": data['description'],
-        "createdAt": datetime.datetime.now() 
+        "createdAt": datetime.datetime.now()
     }
 
     mongo.db.todos.insert_one(task)
@@ -38,6 +39,38 @@ def create():
             "id": str(task['_id'])
         }
     }), 201
+
+@app.route("/todo/<id>", methods=['PUT'])
+def update(id):
+    task = mongo.db.todos.find_one({'_id': ObjectId(id)})
+
+    if task == None:
+        return jsonify({
+            "error": "The todo was not found.",
+        }), 422
+    
+    data = request.get_json()
+
+    requiredFields = [ 'name', 'description' ]
+
+    for field in requiredFields:
+        if field in data:
+            task[field] = data[field]
+    
+    mongo.db.todos.update_one(
+        {
+            '_id': ObjectId(id)
+        },
+        {
+            "$set": task
+        }
+    )
+    
+    return jsonify({
+        "message": "UPDATED",
+    }), 200
+
+
 
 # start the development server using the run() method
 if __name__ == "__main__":
