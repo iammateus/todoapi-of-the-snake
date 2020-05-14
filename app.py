@@ -37,7 +37,7 @@ def create():
         "data": {
             "id": str(task['_id'])
         }
-    })
+    }), 201
 
 # start the development server using the run() method
 if __name__ == "__main__":
