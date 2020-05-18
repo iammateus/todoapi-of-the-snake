@@ -107,16 +107,31 @@ def show(id):
 
 @app.route("/todo", methods=['GET'])
 def list():
-    tasks = mongo.db.todos.find({})
+
+    page = 1
+    limit = 10
+
+    if request.args.get('page') != None:
+        page = int(request.args.get('page'))
+    
+    if request.args.get('limit') != None:
+        if int(request.args.get('limit')) < 21:
+            limit = int(request.args.get('limit'))
+
+    skip = (page - 1) * limit
+    tasks = mongo.db.todos.find({}).skip(skip).limit(limit)
 
     json_tasks = []
+
     for task in tasks:
         task['_id'] = str(task['_id'])
         json_tasks.append(task)
     
     return jsonify({
         "message": "SUCCESS",
-        "data": json_tasks
+        "data": json_tasks,
+        "count": len(json_tasks),
+        "page": page
     }), 200
 
 # start the development server using the run() method
