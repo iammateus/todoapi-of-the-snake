@@ -1,15 +1,10 @@
-FROM python:3.7
-
-ENV FLASK_APP=/var/www/html/app.py
-ENV FLASK_ENV=development
+FROM tiangolo/uwsgi-nginx-flask:python3.8
 
 RUN apt-get update
 RUN pip install poetry
 
-WORKDIR /var/www/html/
+WORKDIR /app
 COPY . .
 
 RUN poetry config virtualenvs.create false
 RUN poetry install
-
-CMD flask run --host 0.0.0.0
